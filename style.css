@@ -422,6 +422,10 @@ a {
 
 }
 
+.input-warning{
+    background: rgba(233, 236, 6, 0.27);
+}
+
 .input-tooltip {
     font-size: 13px;
     line-height: 16px;

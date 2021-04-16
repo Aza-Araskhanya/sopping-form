@@ -2,6 +2,8 @@ let btns = document.querySelectorAll(".btn");
 let inputs = document.querySelectorAll(".input-required");
 let slideOrder = ['shipping', 'billing', 'payment'];
 let copyBtn = document.querySelector('#copy-data');
+let cityImgs = document.querySelectorAll('.get-city');
+
 btns.forEach(function (b, i) {
     b.addEventListener('click', btnClickHandler);
 });
@@ -29,6 +31,9 @@ copyBtn.addEventListener('click', function () {
     })
 })
 
+cityImgs.forEach(function (img) {
+    img.addEventListener('click', getUsercity)
+})
 
 function btnClickHandler(e) {
     e.preventDefault();
@@ -44,7 +49,7 @@ function btnClickHandler(e) {
     })
 
     let firstEmpty = slide.querySelector('.input-warning');
-    // Եթե դատարկ input կա -> ցույց տուր tooltip-ը
+
     if (firstEmpty != null) {
         let tooltip = firstEmpty.closest(".input-container").querySelector('.input-tooltip');
         if (tooltip) {
@@ -76,4 +81,69 @@ function openNextSlide() {
             }
         }
     }
+}
+
+window.addEventListener('load', function () {
+    getCountries();
+})
+function getCountries() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://api.first.org/v1/get-countries')
+    xhr.send();
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            let countries = JSON.parse(xhr.response);
+            if (countries.data !== undefined){
+                countries = countries.data;
+                fillCountries(countries);
+            }
+        }
+    }
+}
+function fillCountries(data){
+    let countrySelect = document.querySelectorAll('.county-select');
+    countrySelect.forEach(function (select) {
+        for (let countryCode in data) {
+            let option = new Option(data[countryCode].country, data[countryCode].country);
+            select.append(option);
+        }
+    })
+}
+function getUsercity() {
+    let slide = this.closest('.form-slide');
+    slide = slide.dataset.slide;
+    navigator.geolocation.getCurrentPosition(
+        function (data) {
+
+    },
+        function () {
+
+    })
+}
+
+function getLocation(lat, long, slide) {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', '');
+    xhr.send();
+
+    xhr.onload = function () {
+        if(xhr.status === 200) {
+            let data = JSON.parse(xhr.response);
+            let city = data.result[0].component.city;
+            let country = data.result[0].component.city;
+            setCity(city, slide);
+            setCountery(country, slide);
+        }
+    }
+}
+
+function setCity(city, slide) {
+    let input = document.querySelector('[name='${slide}-city']');
+    input.value = city;
+
+}
+function setCountry(country, slide) {
+    let select = document.querySelector('[name='${slide}- country']');
+    select.value = country;
+
 }
